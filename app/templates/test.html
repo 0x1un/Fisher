@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {{ super() }}
+{{ data.age }}
+{{ data.name }}
+    {{ data.school | default('没有值') }}
+    {{ data | length() }}
+{% endblock %}
+
