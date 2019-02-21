@@ -65,3 +65,11 @@ class YuShuBook:
 
     def calculate_start(self, page):
         return (page - 1) * current_app.config['PER_PAGE']
+
+    @property
+    def first(self):
+        """
+        优化外部访问
+        :return: 如果books中有多条数据, 就返回第一条
+        """
+        return self.books[0] if self.total >= 1 else None
