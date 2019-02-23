@@ -1,8 +1,7 @@
 from wtforms import Form, StringField, IntegerField
 
 from wtforms.validators import Length, NumberRange, DataRequired
-
-
+from app.models.base import db
 
 
 class SearchForm(Form):
