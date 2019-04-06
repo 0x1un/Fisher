@@ -1,6 +1,9 @@
 class BookViewModel:
 
     def __init__(self, book):
+        """
+        视图函数, 显示在书籍详情页
+        """
         self.title = book['title']
         self.publisher = book['publisher']
         self.author = '/'.join(book['author'])
@@ -9,6 +12,8 @@ class BookViewModel:
         self.summary = book['summary']
         self.isbn = book['isbn']
         self.pages = book['pages']
+        self.pubdate= book['pubdate']
+        self.binding = book['binding']
 
     @property
     def intro(self):
@@ -22,7 +27,7 @@ class BookCollection:
         self.books = []
         self.total = 0
         self.keyword = ''
-
+    # 填充书籍信息
     def fill(self, yushu_book, keyword):
         self.total = yushu_book.total
         self.keyword = keyword

@@ -6,7 +6,7 @@ __author__ = '七月'
 
 @web.route('/')
 def index():
-    pass
+    return '<center><h1>哟西</h1></center>'
 
 
 @web.route('/personal')
