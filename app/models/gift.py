@@ -7,7 +7,6 @@ from sqlalchemy import Column, Integer, Boolean, ForeignKey, String, desc, func
 from sqlalchemy.orm import relationship
 from app.spider.yushu_books import YuShuBook
 from flask import current_app
-from app.models.wish import Wish
 
 
 class Gift(Base):
@@ -41,6 +40,8 @@ class Gift(Base):
 
     @classmethod
     def get_wish_counts(cls, isbn_list: list):
+
+        from app.models.wish import Wish
         # query in wish table according to the isbn number gift
         count_list = db.session.query(func.count(Wish.id), Wish.isbn).filter(
             # receive the exp
