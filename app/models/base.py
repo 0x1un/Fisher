@@ -35,6 +35,7 @@ db = SQLAlchemy(query_class=Query)
 class Base(db.Model):
     __abstract__ = True  # let the Base class not create a data tables.
     status = Column(SmallInteger, default=1)
+    create_time = Column('create_time', Integer)
 
     def __init__(self):
         self.create_time = int(datetime.now().timestamp())
