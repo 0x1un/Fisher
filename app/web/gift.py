@@ -4,6 +4,7 @@ from . import web
 from flask_login import login_required, current_user
 from flask import current_app, flash, render_template
 from app.view_model.gift import MyGifts
+from app.view_model.trade import MyTrades
 
 __author__ = '0x1un'
 
@@ -16,8 +17,8 @@ def my_gifts():
     gifts_of_mine = Gift.get_user_gifts(uid)
     isbn_list = [gift.isbn for gift in gifts_of_mine]
     wish_count_list = Gift.get_wish_counts(isbn_list)
-    view_model = MyGifts(gifts_of_mine, wish_count_list)
-    return render_template('my_gifts.html', gifts=view_model.gifts)
+    view_model = MyTrades(gifts_of_mine, wish_count_list)
+    return render_template('my_gifts.html', gifts=view_model.trades)
 
 
 @web.route('/gifts/book/<isbn>')
