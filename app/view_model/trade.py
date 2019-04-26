@@ -1,3 +1,6 @@
+from app.view_model.book import BookViewModel
+
+
 class TradeInfo:
 
     def __init__(self, goods):
@@ -9,7 +12,6 @@ class TradeInfo:
         self.total = len(goods)
         self.trades = [self.__map_to_trade(single) for single in goods]
 
-
     def __map_to_trade(self, single):
         if single.create_datetime:
             # 将时间戳转换为常见时间格式
@@ -20,6 +22,7 @@ class TradeInfo:
 
 
 class MyTrades:
+
     def __init__(self, trades_of_mine, trade_count_list):
         self.trades = []
         self.__trades_of_mine = trades_of_mine
@@ -40,7 +43,7 @@ class MyTrades:
                 count = trade_count['isbn']
         #  my_trade = Mytrade(trade.id, BookViewModel(trade.book), count)
         my_trade = {
-            'tradees_count': count,
+            'wishes_count': count,
             'book': BookViewModel(trade.book),
             'id': trade.id
         }
