@@ -2,7 +2,7 @@
 from flask import Flask
 from app.models.book import db
 from flask_login import LoginManager
-from flask-mail import Mail
+from flask_mail import Mail
 
 __author__ = '0x1un'
 __date__ = '1/8/19 8:43 PM'
