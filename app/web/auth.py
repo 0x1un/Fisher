@@ -2,17 +2,18 @@ from app.models.user import User
 from app.models.base import db
 from . import web
 from flask import render_template, request, redirect, url_for, make_response, flash
-from app.forms.auth import RegisterForm, LoginForm, EmailForm
+from app.forms.auth import RegisterForm, LoginForm, EmailForm, ResetPasswordForm
 from flask_login import login_user, logout_user
+from app.libs.email import send_mail
 
 __author__ = '0x1un'
 
 
 @web.route('/register', methods=['POST', 'GET'])
 def register():
-    """
-    注册试图函数
-    :return:
+    """
+    注册试图函数
+    :return:
     """
     form = RegisterForm(request.form)
     if request.method == "POST" and form.validate():
@@ -50,13 +51,29 @@ def forget_password_request():
             account_email = form.email.data
             user = User.query.filter_by(
                 email=account_email).first_or_404()  # 自动处理异常
+            send_mail(
+                form.email.data,
+                '重置密码!',
+                'email/reset_password.html',
+                user=user,
+                token=user.generate_token())
+            flash('邮件已发送到您的邮箱' + account_email + ', 请前往邮箱查收')
 
     return render_template("auth/forget_password_request.html", form=form)
 
 
 @web.route('/reset/password/<token>', methods=['GET', 'POST'])
 def forget_password(token):
-    pass
+    form = ResetPasswordForm(request.form)
+    if request.method == 'POST' and form.validate():
+        sucess = User.reset_password(form.password1.data, token)
+        if sucess:
+            flash('你的密码已经更新完成, 请使用新密码进行登录!')
+            return redirect(url_for('web.login'))
+        else:
+            flash('密码重置失败!')
+
+    return render_template('auth/forget_password.html')
 
 
 @web.route('/change/password', methods=['GET', 'POST'])
