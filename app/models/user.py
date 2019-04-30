@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from app.libs.helper import is_isbn_or_key
-from app.models.base import Base
+from app.models.base import Base, db
 from sqlalchemy import Column, String, Integer, Boolean, Float
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
@@ -8,6 +8,8 @@ from app import login_manager
 from app.models.gift import Gift
 from app.models.wish import Wish
 from app.spider.yushu_books import YuShuBook
+from flask import current_app
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 __author__ = '0x1un'
 __date__ = '2/21/19 12:48 PM'
 
@@ -23,6 +25,24 @@ class User(Base, UserMixin):
     send_counter = Column(Integer, default=0)
     receive_counter = Column(Integer, default=0)
 
+    def generate_token(self, expiration=600):
+        s = Serializer(current_app.config['SECRET_KEY'], expiration)
+        return s.dumps({'id': self.id}).decode('utf-8')
+
+    @staticmethod
+    def reset_password(new_password, token):
+        s = Serializer(secret_key=current_app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token.encode('utf-8'))
+        except:
+            return False
+
+        uid = data.get('id')
+        with db.auto_commit():
+            user = User.query.get_or_404(uid)
+            user.password = new_password
+        return True
+        
     @property
     def password(self):
         return self._password
@@ -37,7 +57,6 @@ class User(Base, UserMixin):
         """
         return check_password_hash(self._password, raw)
 
-
     def can_save_to_list(self, isbn):
         if 'isbn' != is_isbn_or_key(isbn):
             return False
@@ -46,8 +65,10 @@ class User(Base, UserMixin):
         if not yushu_book.first:
             # 如果此书没有在api数据库中
             return False
-        gifting = Gift.query.filter_by(uid=self.id, isbn=isbn, launched=False).first()
-        wishing = Wish.query.filter_by(uid=self.id, isbn=isbn, launched=False).first()
+        gifting = Gift.query.filter_by(
+            uid=self.id, isbn=isbn, launched=False).first()
+        wishing = Wish.query.filter_by(
+            uid=self.id, isbn=isbn, launched=False).first()
         # 制定规则, 如果心愿单中有与赠送单都没有, 方可上传
         if not gifting and not wishing:
             return True
