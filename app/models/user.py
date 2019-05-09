@@ -57,6 +57,14 @@ class User(Base, UserMixin):
         """
         return check_password_hash(self._password, raw)
 
+    def can_send_drift(self) -> bool:
+        """
+        determine if there have enough beans to trade
+        return: bool
+        """
+
+        return True if self.beans > 1 else False
+
     def can_save_to_list(self, isbn):
         if 'isbn' != is_isbn_or_key(isbn):
             return False
