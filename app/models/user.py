@@ -10,6 +10,9 @@ from app.models.wish import Wish
 from app.spider.yushu_books import YuShuBook
 from flask import current_app
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from app.libs.enums import PendingStatus
+from app.models.drift import Drift
+from math import floor
 __author__ = '0x1un'
 __date__ = '2/21/19 12:48 PM'
 
@@ -42,7 +45,7 @@ class User(Base, UserMixin):
             user = User.query.get_or_404(uid)
             user.password = new_password
         return True
-        
+
     @property
     def password(self):
         return self._password
@@ -62,8 +65,15 @@ class User(Base, UserMixin):
         determine if there have enough beans to trade
         return: bool
         """
+        if self.beans < 1: return False
+        success_gifts_count = Gift.query.filter_by(
+            uid=self.id, launched=True).count()  # 已经被赠送出去的礼物
+        success_receive_count = Drift.query.filter_by(
+            requester_id=self.id,
+            pending=PendingStatus.Sucess).count()  # 接收到的图书
 
-        return True if self.beans > 1 else False
+        return True if floor(success_receive_count / 2) <= floor(
+            success_gifts_count) else False  # 保证在索要的同时自己是赠送过礼物的, 防止无限制刷交易虚拟币
 
     def can_save_to_list(self, isbn):
         if 'isbn' != is_isbn_or_key(isbn):
@@ -81,6 +91,16 @@ class User(Base, UserMixin):
         if not gifting and not wishing:
             return True
         return False
+
+    @property 
+    def summary(self):
+        return dict(
+            nickname = self.nickname,
+            beans = self.beans,
+            email = self.email,
+            send_receive = str(self.send_counter) + '/' + str(self.receive_counter)
+        )
+
 
 
 @login_manager.user_loader
