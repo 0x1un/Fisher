@@ -1,11 +1,18 @@
 from . import web
+from flask_login import login_required, curent_user
 
-__author__ = '七月'
+__author__ = '0x1un'
 
 
 @web.route('/drift/<int:gid>', methods=['GET', 'POST'])
+@login_required
 def send_drift(gid):
+    """
+    the users must to be login website.
+    """
     pass
+
+    
 
 
 @web.route('/pending')
