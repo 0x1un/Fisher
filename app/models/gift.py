@@ -22,6 +22,14 @@ class Gift(Base):
         yushu_book.search_by_isbn(self.isbn)
         return yushu_book.first
 
+
+    def is_myself_books(self, uid):
+        """
+        判断书籍的索要者是否为自己
+        """
+
+        return True if self.uid == uid else False
+
     @classmethod
     def recent(cls):
         # desc 倒序排列
